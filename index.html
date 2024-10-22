@@ -1,97 +1,77 @@
-
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>TikTok Video Downloader</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
         .container {
-            background-color: #fff;
+            background-color: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            width: 100%;
+        input, button {
             padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
+            margin: 5px;
             border-radius: 5px;
+            border: 1px solid #ccc;
         }
         button {
-            background-color: #1db954;
+            background-color: #28a745;
             color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
             cursor: pointer;
         }
         button:hover {
-            background-color: #14833b;
-        }
-        .download-link {
-            margin-top: 20px;
-            display: none;
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>TikTok Video Downloader</h1>
-        <input type="text" id="tiktok-url" placeholder="Enter TikTok video URL" />
-        <button onclick="downloadVideo()">Download Video</button>
-        <div id="download-link" class="download-link">
-            <a id="link" href="" download>Click here to download your video</a>
-        </div>
-        <div id="error-message" style="color: red; display: none;"></div>
-    </div>
+<div class="container">
+    <h2>TikTok Video Downloader</h2>
+    <input type="text" id="tiktokUrl" placeholder="Enter TikTok Video URL" required>
+    <button onclick="downloadTikTokVideo()">Download</button>
 
-    <script>
-        function downloadVideo() {
-            const url = document.getElementById('tiktok-url').value;
-            const errorMessage = document.getElementById('error-message');
+    <div id="result" style="margin-top: 20px;"></div>
+</div>
 
-            // Simple validation for URL
-            const regex = /^(https?:\/\/)?(www\.)?(tiktok\.com\/.+)$/;
-            if (!regex.test(url)) {
-                errorMessage.innerText = 'Please enter a valid TikTok URL.';
-                errorMessage.style.display = 'block';
-                document.getElementById('download-link').style.display = 'none'; // Hide download link
-                return;
-            } else {
-                errorMessage.style.display = 'none'; // Clear previous error messages
-            }
+<script>
+    function downloadTikTokVideo() {
+        const tiktokUrl = document.getElementById('tiktokUrl').value;
+        const resultDiv = document.getElementById('result');
 
-            // Simulate getting a video link (replace with actual logic)
-            const videoLink = url; // In a real scenario, call your backend API here
+        if (tiktokUrl) {
+            const apiUrl = `https://dark-yasiya-api-new.vercel.app/api?url=${encodeURIComponent(tiktokUrl)}`;
 
-            const downloadLink = document.getElementById('link');
-            downloadLink.href = videoLink; // Set the video download link
-            document.getElementById('download-link').style.display = 'block'; // Show the download link
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.download_url) {
+                        resultDiv.innerHTML = `
+                            <a href="${data.download_url}" download>Click here to download the video</a>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `<p>Failed to download video. Please try again.</p>`;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                });
+        } else {
+            resultDiv.innerHTML = `<p>Please enter a valid TikTok video URL.</p>`;
         }
-    </script>
+    }
+</script>
 
 </body>
-  </html>
+</html>
